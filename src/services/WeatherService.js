@@ -10,13 +10,6 @@ const getWeatherData = (infoType, searchParams) => {
     return fetch(url).then((res) => res.json())
 };
 
-// const getWeatherData = (infoType, searchParams) => {
-//     const url = new URL(`${BASE_URL}/${infoType}`); // Append infoType as a path segment
-//     url.search = new URLSearchParams({...searchParams, appid: API_KEY});
-
-//     return fetch(url).then((res) => res.json());
-// };
-
 const formatCurrentWeather = (data) => {
     const {
         coord: {lat, lon },
@@ -35,29 +28,6 @@ const formatCurrentWeather = (data) => {
 }
 }
 
-// const formatForecastWeather = (data) => {
-//     let { timezone, daily, hourly } = data;
-//     //slice at 1 bnecause 0 = today and we want tomorrow onwards
-//     daily = daily.slice(1, 6).map((d) => {
-//         return {
-//             title: formatToLocalTime(d.dt, timezone, 'ccc'),
-//             temp: d.temp.day,
-//             icon: d.weather[0].icon,
-//         };
-//     });
-    
-//     hourly = hourly.slice(1, 6).map((d) => {
-//         return {
-//             title: formatToLocalTime(d.dt, timezone, 'hh:mm a'),
-//             temp: d.temp,
-//             icon: d.weather[0].icon,
-//         }
-//     });
-
-//     console.log(daily); 
-
-//     return { timezone, daily, hourly };
-// };
 
 const formatForecastWeather = (data) => {
     const { timezone, list } = data; // `list` contains 3-hour intervals for 5 days
@@ -107,7 +77,7 @@ const getFormattedWeatherData = async (searchParams) => {
 
 const formatToLocalTime = (secs, zone, format = "cccc, dd LLL yyyy' | Local time: 'hh:mm a") => DateTime.fromSeconds(secs).setZone(zone).toFormat(format);
 
-const iconUrlFromCode = (code) => `http://openweathermap.org/img/wn/${code}@2x.png`
+const iconUrlFromCode = (code) => `https://openweathermap.org/img/wn/${code}@2x.png`
 
 export default getFormattedWeatherData;
 export { formatToLocalTime, iconUrlFromCode };
