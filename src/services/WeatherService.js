@@ -35,26 +35,55 @@ const formatCurrentWeather = (data) => {
 }
 }
 
-const formatForecastWeather = (data) => {
-    let { timezone, daily, hourly } = data;
-    //slice at 1 bnecause 0 = today and we want tomorrow onwards
-    daily = daily.slice(1, 6).map((d) => {
-        return {
-            title: formatToLocalTime(d.dt, timezone, 'ccc'),
-            temp: d.temp.day,
-            icon: d.weather[0].icon,
-        };
-    });
+// const formatForecastWeather = (data) => {
+//     let { timezone, daily, hourly } = data;
+//     //slice at 1 bnecause 0 = today and we want tomorrow onwards
+//     daily = daily.slice(1, 6).map((d) => {
+//         return {
+//             title: formatToLocalTime(d.dt, timezone, 'ccc'),
+//             temp: d.temp.day,
+//             icon: d.weather[0].icon,
+//         };
+//     });
     
-    hourly = hourly.slice(1, 6).map((d) => {
-        return {
-            title: formatToLocalTime(d.dt, timezone, 'hh:mm a'),
-            temp: d.temp,
-            icon: d.weather[0].icon,
+//     hourly = hourly.slice(1, 6).map((d) => {
+//         return {
+//             title: formatToLocalTime(d.dt, timezone, 'hh:mm a'),
+//             temp: d.temp,
+//             icon: d.weather[0].icon,
+//         }
+//     });
+
+//     console.log(daily); 
+
+//     return { timezone, daily, hourly };
+// };
+
+const formatForecastWeather = (data) => {
+    const { timezone, list } = data; // `list` contains 3-hour intervals for 5 days
+
+    // Group 3-hour forecasts into daily forecasts
+    const dailyForecasts = {};
+    list.forEach(item => {
+        const date = formatToLocalTime(item.dt, timezone, 'yyyy-MM-dd');
+        if (!dailyForecasts[date]) {
+            dailyForecasts[date] = {
+                title: formatToLocalTime(item.dt, timezone, 'ccc'),
+                temp: item.main.temp,
+                icon: item.weather[0].icon,
+            };
         }
     });
 
-    console.log(daily); 
+    // Convert to array and slice for next 5 days
+    const daily = Object.values(dailyForecasts).slice(1, 6);
+
+    // Get hourly forecasts (next 5 entries, 3-hour intervals)
+    const hourly = list.slice(1, 6).map(item => ({
+        title: formatToLocalTime(item.dt, timezone, 'hh:mm a'),
+        temp: item.main.temp,
+        icon: item.weather[0].icon,
+    }));
 
     return { timezone, daily, hourly };
 };
